@@ -1,10 +1,10 @@
 package com.example.demo.entities;
 
+
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Entity
 //@AllArgsConstructor
@@ -16,21 +16,34 @@ public class Product {
     @GeneratedValue
     private Integer id;
 
-    @ManyToMany
-//    @JoinColumn(name="plan_id")
-    private List<Plan> plan = new ArrayList<Plan>();;
-
     private String name;
 
-    private Double caloric_content;
+    private Double caloric;
 
     private Double weight;
+
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "products")
+    Set<Plan> plan = new HashSet<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Product product)) return false;
+
+        return Objects.equals(id, product.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
 
     @Builder
     public Product(Integer id, String name, Double caloric, Double weight) {
         this.id = id;
         this.name = name;
-        this.caloric_content = caloric;
+        this.caloric = caloric;
         this.weight = weight;
     }
+
 }

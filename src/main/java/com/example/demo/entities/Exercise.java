@@ -1,13 +1,9 @@
 package com.example.demo.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @AllArgsConstructor
@@ -19,13 +15,34 @@ public class Exercise {
     @GeneratedValue
     private Integer id;
 
-    @ManyToMany
-    //@JoinColumn(name="plan_id")
-    private List<Plan> plan = new ArrayList<Plan>();;
-
     private String name;
 
     private Double energy_consumption;
 
     private Integer duration;
+
+    @Builder
+    public Exercise(Integer id, String name, Double energy_consumption, Integer duration) {
+        this.id = id;
+        this.name = name;
+        this.energy_consumption = energy_consumption;
+        this.duration = duration;
+    }
+
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "exercises")
+    Set<Plan> plan = new HashSet<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Exercise exercise)) return false;
+
+        return Objects.equals(id, exercise.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
 }
+

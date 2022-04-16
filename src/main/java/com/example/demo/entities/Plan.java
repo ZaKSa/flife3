@@ -1,13 +1,12 @@
 package com.example.demo.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @AllArgsConstructor
@@ -19,22 +18,34 @@ public class Plan {
     @GeneratedValue
     private Integer id;
 
-    @ManyToMany(mappedBy = "plan")
-    private List<Product> products = new ArrayList<Product>();
+    @Builder
+    public Plan(Integer id) {
+        this.id = id;
+    }
 
-    @ManyToMany//(mappedBy = "plan")
-    private List<Exercise> exercises = new ArrayList<Exercise>();
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "plan")
+    Set<User> user = new HashSet<>();
 
-    @OneToMany
-    @JoinColumn(name = "user_id")
-    private List<User> user = new ArrayList<User>();
-
-    /*@ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     Set<Exercise> exercises = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     Set<Exercise> products = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "plans")
-    Set<User> users = new HashSet<>();*/
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Plan)) return false;
+
+        Plan location = (Plan) o;
+
+        return id.equals(location.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
 }
+
